@@ -1,11 +1,13 @@
 {
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "node ./scripts/fix-ts-interface-checker.mjs"
+    "postinstall": "node ./scripts/fix-ts-interface-checker.mjs",
+    "fetch:contracts": "node ./scripts/fetch-contract-sources.mjs",
+    "compile:contracts": "cd onchain && npx hardhat compile",
+    "typechain": "cd onchain && npx hardhat typechain"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
@@ -22,6 +24,11 @@
     "wagmi": "^2.5.7"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "@prb/math": "^4.1.0",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@types/chai": "^4.3.11",
     "@types/node": "^22.14.1",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
@@ -29,12 +36,15 @@
     "@typescript-eslint/parser": "^7.3.1",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.18",
+    "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
+    "hardhat": "^2.22.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "ts-interface-checker": "^0.1.13",
+    "typechain": "^8.3.1",
     "typescript": "^5.4.2",
     "vite": "^5.1.6"
   }
