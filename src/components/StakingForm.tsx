@@ -314,7 +314,7 @@ export const StakingForm: React.FC = () => {
               type="number"
               value={stakeAmount}
               onChange={(e) => setStakeAmount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A3161]"
               placeholder="Enter amount to stake"
               disabled={isStaking}
             />
@@ -330,7 +330,7 @@ export const StakingForm: React.FC = () => {
             <select
               value={stakingPeriod}
               onChange={handleStakingPeriodChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#0A3161]"
               disabled={isStaking}
             >
               <option value="30">30 Days</option>
@@ -346,7 +346,7 @@ export const StakingForm: React.FC = () => {
               !stakeAmount ||
               Number(tokenBalance) < Number(stakeAmount)
             }
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 flex items-center justify-center"
+            className="w-full px-4 py-2 bg-[#0A3161] text-white rounded-md hover:bg-[#123D7D] focus:outline-none focus:ring-2 focus:ring-[#0A3161] disabled:opacity-50 flex items-center justify-center"
           >
             {isStaking ? (
               <>

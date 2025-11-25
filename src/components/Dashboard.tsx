@@ -14,23 +14,23 @@ export const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-indigo-900 min-h-screen p-4 hidden md:block">
+        <div className="w-64 bg-[#0A3161] min-h-screen p-4 hidden md:block">
           <div className="flex items-center space-x-2 text-white mb-8">
-            <Layers size={24} className="text-indigo-300" />
+            <Layers size={24} className="text-blue-200" />
             <h1 className="text-xl font-bold">VMF Staking</h1>
           </div>
 
           <nav className="space-y-1">
             <a
               href="#"
-              className="flex items-center space-x-3 text-white bg-indigo-800 rounded-lg px-4 py-3"
+              className="flex items-center space-x-3 text-white bg-[#123D7D] rounded-lg px-4 py-3"
             >
               <LayoutDashboard size={20} />
               <span>Dashboard</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-3 text-indigo-200 hover:bg-indigo-800 rounded-lg px-4 py-3 transition-colors"
+              className="flex items-center space-x-3 text-blue-100 hover:bg-[#123D7D] rounded-lg px-4 py-3 transition-colors"
             >
               <Activity size={20} />
               <span>Transactions</span>
@@ -45,7 +45,7 @@ export const Dashboard: React.FC = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between h-16 items-center">
                 <div className="flex items-center md:hidden">
-                  <Layers size={24} className="text-indigo-600" />
+                  <Layers size={24} className="text-[#0A3161]" />
                   <h1 className="text-xl font-bold text-gray-900 ml-2">
                     VMF Staking
                   </h1>
@@ -66,8 +66,8 @@ export const Dashboard: React.FC = () => {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="mx-auto w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                  <Layers size={40} className="text-indigo-600" />
+                <div className="mx-auto w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                  <Layers size={40} className="text-[#0A3161]" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Connect Your Wallet
