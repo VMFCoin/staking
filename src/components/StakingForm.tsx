@@ -329,7 +329,7 @@ export const StakingForm: React.FC = () => {
 
           {Number(tokenBalance) < Number(stakeAmount) && stakeAmount && (
             <p className="text-red-500 text-sm">
-              Insufficient balance. Please mint more tokens first.
+              Insufficient balance. Must have VMF in wallet to stake.
             </p>
           )}
         </div>
