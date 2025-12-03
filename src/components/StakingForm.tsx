@@ -17,7 +17,6 @@ import {
 import { config } from "../wagmi";
 import {
   toastPending,
-  toastSuccess,
   toastError,
   toastUpdateSuccess,
   toastUpdateError,
@@ -31,77 +30,12 @@ const formatAPR = (apr: number): string => {
   return apr.toFixed(2);
 };
 
-interface SuccessModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  txHash: string;
-  action: "mint" | "stake";
-}
-
-const SuccessModal: React.FC<SuccessModalProps> = ({
-  isOpen,
-  onClose,
-  txHash,
-  action,
-}) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-            <svg
-              className="h-6 w-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {action === "mint"
-              ? "Tokens Minted Successfully!"
-              : "Tokens Staked Successfully!"}
-          </h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Your transaction has been confirmed.
-          </p>
-          <div className="bg-gray-50 rounded-md p-3 mb-4">
-            <p className="text-xs text-gray-600 break-all">
-              Transaction Hash: {txHash}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:text-sm"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export const StakingForm: React.FC = () => {
-  const [mintAmount, setMintAmount] = useState("");
   const [stakeAmount, setStakeAmount] = useState("");
   const [stakingPeriod, setStakingPeriod] = useState<string>("30"); // Default 30 days
-  const [isMinting, setIsMinting] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
   const [tokenBalance, setTokenBalance] = useState("0");
-  const [successModal, setSuccessModal] = useState<{
-    isOpen: boolean;
-    txHash: string;
-    action: "mint" | "stake";
-  }>({ isOpen: false, txHash: "", action: "mint" });
 
   const account = getAccount(config);
   const [currentAPR, setCurrentAPR] = useState<number>(15); // Start with base APR
@@ -161,51 +95,6 @@ export const StakingForm: React.FC = () => {
     }
   };
 
-  const handleMint = async () => {
-    // Validation
-    if (!mintAmount) {
-      toastError("Please enter an amount to mint");
-      return;
-    }
-
-    const amount = Number(mintAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toastError("Please enter a valid positive number");
-      return;
-    }
-
-    if (!account.address) {
-      toastError("Please connect your wallet");
-      return;
-    }
-
-    setIsMinting(true);
-    const toastId = toastPending("Minting tokens...");
-
-    try {
-      const { request } = await simulateContract(config, {
-        address: MOCK_TOKEN_ADDRESS,
-        abi: MOCK_TOKEN_ABI,
-        functionName: "mint",
-        args: [account.address, parseUnits(mintAmount, 18)],
-      });
-
-      const tx = await writeContract(config, request);
-      toastUpdateSuccess(
-        toastId,
-        `Successfully minted ${mintAmount} VMF tokens!`,
-        tx
-      );
-      setMintAmount("");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to mint tokens";
-      toastUpdateError(toastId, "Mint failed", errorMessage);
-      console.error("Error minting:", error);
-    } finally {
-      setIsMinting(false);
-    }
-  };
 
   const handleApprove = async (toastId?: string | number): Promise<boolean> => {
     try {
@@ -259,7 +148,7 @@ export const StakingForm: React.FC = () => {
     }
 
     if (Number(tokenBalance) < amount) {
-      toastError("Insufficient balance. Please mint more tokens first.");
+      toastError("Insufficient balance. You need more $VMF tokens in your wallet.");
       return;
     }
 
@@ -337,13 +226,6 @@ export const StakingForm: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto p-6">
-      <SuccessModal
-        isOpen={successModal.isOpen}
-        onClose={() => setSuccessModal({ ...successModal, isOpen: false })}
-        txHash={successModal.txHash}
-        action={successModal.action}
-      />
-
       {/* APR Display Card */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold mb-4">Current Staking APR</h2>
