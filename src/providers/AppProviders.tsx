@@ -3,6 +3,7 @@ import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider } from "connectkit";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { Toaster } from "sonner";
 import { config } from "../wagmi";
 
 const queryClient = new QueryClient();
@@ -20,7 +21,10 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider mode="light">
-          <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
+          <ApolloProvider client={apolloClient}>
+            {children}
+            <Toaster position="bottom-right" />
+          </ApolloProvider>
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

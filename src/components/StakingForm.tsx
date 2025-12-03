@@ -15,6 +15,13 @@ import {
   STAKING_ABI as STAKING_CONTRACT_ABI,
 } from "../contracts/abis";
 import { config } from "../wagmi";
+import {
+  toastPending,
+  toastSuccess,
+  toastError,
+  toastUpdateSuccess,
+  toastUpdateError,
+} from "../services/toast";
 
 // Helper function to format APR
 const formatAPR = (apr: number): string => {
@@ -97,9 +104,10 @@ export const StakingForm: React.FC = () => {
   }>({ isOpen: false, txHash: "", action: "mint" });
 
   const account = getAccount(config);
-  const [currentAPR, setCurrentAPR] = useState<number>(7); // Start with base APR
-  const BASE_APR = 7; // 7% base APR
-  const APR_INCREMENT_PER_SECOND = 2.219685e-9;
+  const [currentAPR, setCurrentAPR] = useState<number>(15); // Start with base APR
+  const BASE_APR = 15; // 15% base APR
+  // APR per second: 15% / (365 * 24 * 60 * 60) = 4.756468797564688e-9
+  const APR_INCREMENT_PER_SECOND = 4.756468797564688e-9;
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -154,8 +162,26 @@ export const StakingForm: React.FC = () => {
   };
 
   const handleMint = async () => {
-    if (!mintAmount || !account.address) return;
+    // Validation
+    if (!mintAmount) {
+      toastError("Please enter an amount to mint");
+      return;
+    }
+
+    const amount = Number(mintAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toastError("Please enter a valid positive number");
+      return;
+    }
+
+    if (!account.address) {
+      toastError("Please connect your wallet");
+      return;
+    }
+
     setIsMinting(true);
+    const toastId = toastPending("Minting tokens...");
+
     try {
       const { request } = await simulateContract(config, {
         address: MOCK_TOKEN_ADDRESS,
@@ -165,26 +191,32 @@ export const StakingForm: React.FC = () => {
       });
 
       const tx = await writeContract(config, request);
-      setSuccessModal({
-        isOpen: true,
-        txHash: tx,
-        action: "mint",
-      });
+      toastUpdateSuccess(
+        toastId,
+        `Successfully minted ${mintAmount} VMF tokens!`,
+        tx
+      );
       setMintAmount("");
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to mint tokens";
+      toastUpdateError(toastId, "Mint failed", errorMessage);
       console.error("Error minting:", error);
-      alert(error instanceof Error ? error.message : "Failed to mint tokens");
     } finally {
       setIsMinting(false);
     }
   };
 
-  const handleApprove = async (): Promise<boolean> => {
+  const handleApprove = async (toastId?: string | number): Promise<boolean> => {
     try {
       const hasAllowance = await checkAllowance();
       if (hasAllowance) {
         console.log("Sufficient allowance exists, skipping approval");
         return true;
+      }
+
+      if (toastId) {
+        toastUpdateSuccess(toastId, "Requesting token approval...");
       }
 
       const { request } = await simulateContract(config, {
@@ -195,27 +227,61 @@ export const StakingForm: React.FC = () => {
       });
 
       const tx = await writeContract(config, request);
-      console.log("Transaction hash:", tx);
+      console.log("Approval transaction hash:", tx);
       return true;
     } catch (error) {
       console.error("Error approving:", error);
+      if (toastId) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Approval failed";
+        toastUpdateError(toastId, "Approval failed", errorMessage);
+      }
       return false;
     }
   };
 
   const handleStake = async () => {
-    if (!stakeAmount || !account.address) return;
+    // Validation
+    if (!stakeAmount) {
+      toastError("Please enter an amount to stake");
+      return;
+    }
+
+    const amount = Number(stakeAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toastError("Please enter a valid positive number");
+      return;
+    }
+
+    if (amount > 5000) {
+      toastError("Stake amount exceeds maximum of 5,000 VMF");
+      return;
+    }
+
+    if (Number(tokenBalance) < amount) {
+      toastError("Insufficient balance. Please mint more tokens first.");
+      return;
+    }
+
+    if (!account.address) {
+      toastError("Please connect your wallet");
+      return;
+    }
+
     setIsStaking(true);
+    const toastId = toastPending("Preparing to stake tokens...");
 
     try {
       // First handle approval if needed
-      const approved = await handleApprove();
+      const approved = await handleApprove(toastId);
       if (!approved) {
         throw new Error("Approval failed");
       }
 
       // Add delay after approval to ensure transaction is processed
       await new Promise((resolve) => setTimeout(resolve, 5000)); // 5 second delay
+
+      toastUpdateSuccess(toastId, "Submitting stake transaction...");
 
       const stakingPeriodInSeconds =
         BigInt(stakingPeriod) * BigInt(24 * 60 * 60);
@@ -246,15 +312,17 @@ export const StakingForm: React.FC = () => {
       });
 
       const tx = await writeContract(config, request);
-      setSuccessModal({
-        isOpen: true,
-        txHash: tx,
-        action: "stake",
-      });
+      toastUpdateSuccess(
+        toastId,
+        `Successfully staked ${stakeAmount} VMF tokens for ${stakingPeriod} days!`,
+        tx
+      );
       setStakeAmount("");
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to stake tokens";
+      toastUpdateError(toastId, "Stake failed", errorMessage);
       console.error("Error staking:", error);
-      alert(error instanceof Error ? error.message : "Failed to stake tokens");
     } finally {
       setIsStaking(false);
     }

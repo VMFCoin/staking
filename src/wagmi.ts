@@ -1,5 +1,5 @@
 import { createConfig, http } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { getDefaultConfig } from "connectkit";
 
 // Get WalletConnect Project ID from environment variable
@@ -17,10 +17,10 @@ export const config = createConfig(
     walletConnectProjectId,
 
     // Chains configuration
-    chains: [baseSepolia],
+    chains: [base],
     transports: {
-      [baseSepolia.id]: http(
-        "https://api.developer.coinbase.com/rpc/v1/base-sepolia/DBytHtVTEsZ9VhQE0Zx7WvomGHot4hTI"
+      [base.id]: http(
+        "https://api.developer.coinbase.com/rpc/v1/base/DBytHtVTEsZ9VhQE0Zx7WvomGHot4hTI"
       ),
     },
   })

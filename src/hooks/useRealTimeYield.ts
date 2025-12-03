@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { formatUnits } from "viem";
 
-// APR is 10% per year
-const APR = 0.07;
+// APR is 15% per year
+const APR = 0.15;
 const SECONDS_PER_YEAR = 365 * 24 * 60 * 60;
 const APR_RATE_PER_SECOND = APR / SECONDS_PER_YEAR;
 

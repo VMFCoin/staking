@@ -1,6 +1,7 @@
 import { formatUnits, parseUnits } from "viem";
 
-const APR_RATE_PER_SECOND = 2.219685e-9;
+// 15% APR per year = 4.756468797564688e-9 per second
+const APR_RATE_PER_SECOND = 4.756468797564688e-9;
 
 export const calculateCurrentYield = (
   startTime: number,
